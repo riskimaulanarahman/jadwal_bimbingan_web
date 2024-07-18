@@ -10,7 +10,7 @@ Route::get('/', [AuthController::class, 'login']);
 Route::post('/', [AuthController::class, 'login']);
 Route::get('/logout', [AuthController::class, 'logout']);
 Route::get('/contoh-metode-genetic', [GeneticController::class, 'index']);
-Route::get('/cakaran-metode-genetic', [GeneticController::class, 'cakaran']);
+Route::get('/cron-metode-genetic', [GeneticController::class, 'cakaran']);
 
 
 Route::middleware([AuthMiddleware::class])->group(function() {

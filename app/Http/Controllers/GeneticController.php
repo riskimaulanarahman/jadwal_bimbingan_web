@@ -55,20 +55,22 @@ class GeneticController extends Controller
             $filterKandidat = [];
 
             foreach ($jadwals as $jadwal) {
-                foreach ($arrMahasiswa as $mahasiswa) {
-                    $mahasiswaStartDate = new \DateTime($mahasiswa->mahasiswa_start_bimbingan);
-                    $mahasiswaEndDate = new \DateTime($mahasiswa->mahasiswa_end_bimbingan);
+                if (!$jadwal->is_processed) {
+                    foreach ($arrMahasiswa as $mahasiswa) {
+                        $mahasiswaStartDate = new \DateTime($mahasiswa->mahasiswa_start_bimbingan);
+                        $mahasiswaEndDate = new \DateTime($mahasiswa->mahasiswa_end_bimbingan);
 
-                    $jadwalStartDate = new \DateTime($jadwal->dosen_tanggal_dari);
-                    $jadwalEndDate = new \DateTime($jadwal->dosen_tanggal_sampai);
+                        $jadwalStartDate = new \DateTime($jadwal->dosen_tanggal_dari);
+                        $jadwalEndDate = new \DateTime($jadwal->dosen_tanggal_sampai);
 
-                    // LOGIC HERE: Cek apakah tanggal bimbingan mahasiswa berada dalam rentang tanggal jadwal dosen
-                    if ($mahasiswaStartDate <= $jadwalEndDate && $mahasiswaEndDate >= $jadwalStartDate) {
-                        if (!isset($filterKandidat[$jadwal->jadwal_dosen_id])) {
-                            $filterKandidat[$jadwal->jadwal_dosen_id] = [];
+                        // LOGIC HERE: Cek apakah tanggal bimbingan mahasiswa berada dalam rentang tanggal jadwal dosen
+                        if ($mahasiswaStartDate <= $jadwalEndDate && $mahasiswaEndDate >= $jadwalStartDate) {
+                            if (!isset($filterKandidat[$jadwal->jadwal_dosen_id])) {
+                                $filterKandidat[$jadwal->jadwal_dosen_id] = [];
+                            }
+
+                            array_push($filterKandidat[$jadwal->jadwal_dosen_id], $mahasiswa->mahasiswa_id);
                         }
-
-                        array_push($filterKandidat[$jadwal->jadwal_dosen_id], $mahasiswa->mahasiswa_id);
                     }
                 }
             }
@@ -77,56 +79,51 @@ class GeneticController extends Controller
 
             foreach ($filterKandidat as $keyFilter => $valueFilter) {
                 $mahasiswaIds = array_values($valueFilter);
-                foreach ($valueFilter as $mahasiswaId) {
-                    $samples = Mahasiswa::whereIn('mahasiswa_id', $mahasiswaIds)->get();
+                $samples = Mahasiswa::whereIn('mahasiswa_id', $mahasiswaIds)->get();
 
-                    if (count($samples) < $this->jumlah_bimbingan) {
-                        $this->jumlah_bimbingan = count($samples);
-                    }
-
-                    $selectedStudents = $this->processGeneticAlgorithm($samples);
-
-
-
-                    // LOGIKA PENGKABARAN UNTUK MAHASISWA
+                if (count($samples) < $this->jumlah_bimbingan) {
+                    $this->jumlah_bimbingan = count($samples);
                 }
-            }
-        }
 
-        // LOGIKA PENGKABARAN UNTUK DOSEN 
-        // if($dataDosen->user->token != null) {
-        //     $title = 'Bimbingan';
-        //     $body = 'Peserta Bimbingan anda telah keluar, Buka aplikasi untuk mencoba';
-        //     $token = $dataDosen->user->token; // Ganti dengan token perangkat yang valid
+                $selectedStudents = $this->processGeneticAlgorithm($samples);
 
-        //     $this->firebaseMessagingService->sendNotificationToToken($title, $body, $token);
-        // }
-
-        // LOGIKA UPDATE DATA UNTUK MAHASISWA YANG TERPILIH
-        foreach ($selectedStudents as $selectedStudent) {
-            // $selectedStudent->mahasiswa_total_bimbingan += 1;
-            // $selectedStudent->save();
-
-            // $jadwalDosen = JadwalDosen::find($keyFilter);
-
-            // $riwayatBimbingan = new RiwayatBimbingan();
-            // $riwayatBimbingan->jadwal_dosen_id = $keyFilter;
-            // $riwayatBimbingan->mahasiswa_id = $selectedStudent->mahasiswa_id;
-            // $riwayatBimbingan->dosen_id = $dataDosen->dosen_id;
-            // $riwayatBimbingan->tanggal = $jadwalDosen->dosen_tanggal_dari;
-            // $riwayatBimbingan->save();
-
-            echo $selectedStudent->mahasiswa_nama;
-            echo '<br>';
-            if ($selectedStudent->user->token != null) {
-                $title = 'Bimbingan Baru';
-                $body = 'Jadwal Bimbingan telah keluar terbaru! Buka aplikasi untuk memeriksa';
-                $token = $selectedStudent->user->token; // Ganti dengan token perangkat yang valid
-
-                $this->firebaseMessagingService->sendNotificationToToken($title, $body, $token);
-
-                echo $token;
-                echo '<br>';
+                // LOGIKA PENGKABARAN UNTUK DOSEN 
+                if ($dataDosen->user->token != null) {
+                    $title = 'Bimbingan';
+                    $body = 'Peserta Bimbingan anda telah keluar, Buka aplikasi untuk mencoba';
+                    $token = $dataDosen->user->token;
+        
+                    $this->firebaseMessagingService->sendNotificationToToken($title, $body, $token);
+                }
+        
+                // LOGIKA UPDATE DATA UNTUK MAHASISWA YANG TERPILIH
+                foreach ($selectedStudents as $selectedStudent) {
+                    $selectedStudent->mahasiswa_total_bimbingan += 1;
+                    $selectedStudent->save();
+        
+                    $jadwalDosen = JadwalDosen::find($keyFilter);
+                    $jadwalDosen->is_processed = true;
+                    $jadwalDosen->save();
+        
+                    $riwayatBimbingan = new RiwayatBimbingan();
+                    $riwayatBimbingan->jadwal_dosen_id = $keyFilter;
+                    $riwayatBimbingan->mahasiswa_id = $selectedStudent->mahasiswa_id;
+                    $riwayatBimbingan->dosen_id = $dataDosen->dosen_id;
+                    $riwayatBimbingan->tanggal = $jadwalDosen->dosen_tanggal_dari;
+                    $riwayatBimbingan->save();
+        
+                    // LOGIKA PENGKABARAN UNTUK MAHASISWA
+                    if ($selectedStudent->user->token != null) {
+                        $title = 'Bimbingan Baru';
+                        $body = 'Jadwal Bimbingan telah keluar terbaru! Buka aplikasi untuk memeriksa';
+                        $token = $selectedStudent->user->token;
+        
+                        $this->firebaseMessagingService->sendNotificationToToken($title, $body, $token);
+        
+                        echo $token;
+                        echo '<br>';
+                    }
+                }
             }
         }
     }

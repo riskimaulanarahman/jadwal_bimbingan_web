@@ -17,6 +17,7 @@ class JadwalDosen extends Model
         'dosen_id',
         'dosen_tanggal_dari',
         'dosen_tanggal_selesai',
+        'is_processed',
     ];
 
     public function riwayat_bimbingan(): HasMany {
