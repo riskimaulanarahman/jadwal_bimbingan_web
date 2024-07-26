@@ -29,6 +29,7 @@
             <form class="col-lg-3 col-md-4 col-10 mx-auto text-center" action="/" method="POST">
               <h1 class="h6 mb-3">Aplikasi Penjadwalan Bimbingan Skripsi</h1>
               <br>
+              <small>by.Rafli</small>
                 @csrf
 
                 @if (session('error'))
