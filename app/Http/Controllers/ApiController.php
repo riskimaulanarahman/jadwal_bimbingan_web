@@ -126,7 +126,7 @@ class ApiController extends Controller
     public function editDateDosen(Request $request) {
         $jadwal = JadwalDosen::find($request->id);
 
-        $jadwalCheck = JadwalDosen::where('dosen_tanggal_dari', $request->start)->where('id', '!=', $request->id)->first();
+        $jadwalCheck = JadwalDosen::where('dosen_tanggal_dari', $request->start)->where('jadwal_dosen_id', '!=', $request->id)->first();
 
         if($jadwalCheck != null) {
             return new ApiResource(true, 'success', $jadwal);
