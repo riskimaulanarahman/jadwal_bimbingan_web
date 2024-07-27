@@ -78,6 +78,7 @@ class DashboardController extends Controller
         $dosen->save();
         return redirect()->back()->with('success', 'Berhasil mengubah data ');
     }
+    
     public function deleteDosen($id) {
         $dosen = Dosen::find($id);
         $user = User::find($dosen->user_id);
