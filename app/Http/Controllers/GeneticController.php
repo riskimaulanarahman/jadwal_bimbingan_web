@@ -128,6 +128,17 @@ class GeneticController extends Controller
         }
     }
 
+    public function testNotification() {
+        $dataDosen = Dosen::with('user')->where('dosen_id', 1)->first();
+        if ($dataDosen->user->token != null) {
+            $title = 'Bimbingan';
+            $body = 'Peserta Bimbingan anda telah keluar, Buka aplikasi untuk mencoba';
+            $token = $dataDosen->user->token;
+
+            $this->firebaseMessagingService->sendNotificationToToken($title, $body, $token);
+        }
+    }
+
     private function fitness($solution, $preferences)
     {
         $score = 0;
