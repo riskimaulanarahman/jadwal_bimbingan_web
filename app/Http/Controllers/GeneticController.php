@@ -90,7 +90,7 @@ class GeneticController extends Controller
                 // LOGIKA PENGKABARAN UNTUK DOSEN 
                 if ($dataDosen->user->token != null) {
                     $title = 'Bimbingan';
-                    $body = 'Peserta Bimbingan anda telah keluar, Buka aplikasi untuk mencoba';
+                    $body = 'Peserta Bimbingan anda telah keluar, Buka aplikasi untuk melihat';
                     $token = $dataDosen->user->token;
         
                     $this->firebaseMessagingService->sendNotificationToToken($title, $body, $token);
@@ -115,7 +115,7 @@ class GeneticController extends Controller
                     // LOGIKA PENGKABARAN UNTUK MAHASISWA
                     if ($selectedStudent->user->token != null) {
                         $title = 'Bimbingan Baru';
-                        $body = 'Jadwal Bimbingan telah keluar terbaru! Buka aplikasi untuk memeriksa';
+                        $body = 'Jadwal Bimbingan terbaru telah keluar! Buka aplikasi untuk memeriksa';
                         $token = $selectedStudent->user->token;
         
                         $this->firebaseMessagingService->sendNotificationToToken($title, $body, $token);
