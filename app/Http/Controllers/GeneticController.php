@@ -58,6 +58,7 @@ class GeneticController extends Controller
                     foreach ($arrMahasiswa as $mahasiswa) {
                         $mahasiswaStartDate = new \DateTime($mahasiswa->mahasiswa_start_bimbingan);
                         $mahasiswaEndDate = new \DateTime($mahasiswa->mahasiswa_end_bimbingan);
+                        $mahasiswaEndDate->modify('+1 day');
 
                         $jadwalStartDate = new \DateTime($jadwal->dosen_tanggal_dari);
                         $jadwalEndDate = new \DateTime($jadwal->dosen_tanggal_sampai);
