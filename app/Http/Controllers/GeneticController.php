@@ -13,7 +13,6 @@ use Illuminate\Http\Request;
 class GeneticController extends Controller
 {
     protected $firebaseMessagingService;
-    private $jumlah_bimbingan = 5;
     private $mahasiswas;
 
     public function __construct(FirebaseMessagingService $firebaseMessagingService)
@@ -27,7 +26,7 @@ class GeneticController extends Controller
         $dosen = Dosen::first(); // Ambil dosen pertama (asumsi hanya satu dosen)
 
         // Algoritma Genetik untuk memilih 5 mahasiswa terbaik
-        $selectedStudents = $this->geneticAlgorithm($this->mahasiswas, $dosen);
+        $selectedStudents = $this->geneticAlgorithm($dosen, $this->mahasiswas);
 
         // dd($selectedStudents);
         return view('dashboard.genetic', compact('selectedStudents', 'dosen'));
@@ -81,11 +80,11 @@ class GeneticController extends Controller
                 $mahasiswaIds = array_values($valueFilter);
                 $samples = Mahasiswa::whereIn('mahasiswa_id', $mahasiswaIds)->get();
 
-                if (count($samples) < $this->jumlah_bimbingan) {
-                    $this->jumlah_bimbingan = count($samples);
+                if (count($samples) < $dataDosen->dosen_batas_bimbingan) {
+                    $dataDosen->dosen_batas_bimbingan = count($samples);
                 }
 
-                $selectedStudents = $this->processGeneticAlgorithm($samples);
+                $selectedStudents = $this->processGeneticAlgorithm($dataDosen, $samples);
 
                 // LOGIKA PENGKABARAN UNTUK DOSEN 
                 if ($dataDosen->user->token != null) {
@@ -148,12 +147,12 @@ class GeneticController extends Controller
         return $score;
     }
 
-    private function generatePopulation($students, $populationSize)
+    private function generatePopulation($dosen, $students, $populationSize)
     {
         $population = [];
         for ($i = 0; $i < $populationSize; $i++) {
             // Memilih 5 mahasiswa secara acak dari populasi
-            $individual = $students->random($this->jumlah_bimbingan)->pluck('mahasiswa_id')->toArray();
+            $individual = $students->random($dosen->dosen_batas_bimbingan)->pluck('mahasiswa_id')->toArray();
             $population[] = $individual;
         }
         return $population;
@@ -167,12 +166,12 @@ class GeneticController extends Controller
         return $population[0]; // Mengambil individu terbaik (5 mahasiswa terbaik)
     }
 
-    private function processGeneticAlgorithm($students)
+    private function processGeneticAlgorithm($dosen, $students)
     {
         $preferences = $students->pluck('mahasiswa_total_bimbingan', 'mahasiswa_id')->toArray();
         $populationSize = 20; // Ukuran populasi
         $generations = 50; // Jumlah generasi
-        $population = $this->generatePopulation($students, $populationSize);
+        $population = $this->generatePopulation($dosen, $students, $populationSize);
 
         for ($i = 0; $i < $generations; $i++) {
             $population = $this->select($population, $preferences);
@@ -181,21 +180,21 @@ class GeneticController extends Controller
             $selectedStudentIds = $population;
 
             // Memastikan hanya ada 5 mahasiswa yang terpilih
-            if (count($selectedStudentIds) == $this->jumlah_bimbingan) {
+            if (count($selectedStudentIds) == $dosen->dosen_batas_bimbingan) {
                 return Mahasiswa::with('user')->whereIn('mahasiswa_id', $selectedStudentIds)->get();
             }
         }
 
         // Jika tidak ditemukan solusi yang tepat, kembalikan yang terbaik pada saat terakhir
-        return Mahasiswa::with('user')->whereIn('mahasiswa_id', $population[0])->take($this->jumlah_bimbingan)->get();
+        return Mahasiswa::with('user')->whereIn('mahasiswa_id', $population[0])->take($dosen->dosen_batas_bimbingan)->get();
     }
 
-    private function geneticAlgorithm($students, $advisor)
+    private function geneticAlgorithm($dosen, $students)
     {
         $preferences = $students->pluck('mahasiswa_total_bimbingan', 'mahasiswa_id')->toArray();
         $populationSize = 20; // Ukuran populasi
         $generations = 50; // Jumlah generasi
-        $population = $this->generatePopulation($students, $populationSize);
+        $population = $this->generatePopulation($dosen, $students, $populationSize);
 
         for ($i = 0; $i < $generations; $i++) {
             $population = $this->select($population, $preferences);
@@ -204,12 +203,12 @@ class GeneticController extends Controller
             $selectedStudentIds = $population;
 
             // Memastikan hanya ada 5 mahasiswa yang terpilih
-            if (count($selectedStudentIds) == $this->jumlah_bimbingan) {
+            if (count($selectedStudentIds) == $dosen->dosen_batas_bimbingan) {
                 return Mahasiswa::whereIn('mahasiswa_id', $selectedStudentIds)->get();
             }
         }
 
         // Jika tidak ditemukan solusi yang tepat, kembalikan yang terbaik pada saat terakhir
-        return Mahasiswa::whereIn('mahasiswa_id', $population[0])->take($this->jumlah_bimbingan)->get();
+        return Mahasiswa::whereIn('mahasiswa_id', $population[0])->take($dosen->dosen_batas_bimbingan)->get();
     }
 }
