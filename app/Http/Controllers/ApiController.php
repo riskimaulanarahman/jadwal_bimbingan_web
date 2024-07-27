@@ -109,16 +109,29 @@ class ApiController extends Controller
         $user = User::with('dosen')->where('username', $request->username)->first();
         $dosen = Dosen::where('user_id', $user->user_id)->first();
         $jadwal = new JadwalDosen();
+        
+        $jadwalCheck = JadwalDosen::where('dosen_tanggal_dari', $request->start)->first();
+
+        if($jadwalCheck != null) {
+            return new ApiResource(true, 'success', $jadwal);
+        }
+
         $jadwal->dosen_id = $dosen->dosen_id;
         $jadwal->dosen_tanggal_dari = $request->start;
         $jadwal->dosen_tanggal_selesai = $request->end;
         $jadwal->save();
         
-        return new ApiResource(true, 'success', $jadwal);
     }
 
     public function editDateDosen(Request $request) {
         $jadwal = JadwalDosen::find($request->id);
+
+        $jadwalCheck = JadwalDosen::where('dosen_tanggal_dari', $request->start)->where('id', '!=', $request->id)->first();
+
+        if($jadwalCheck != null) {
+            return new ApiResource(true, 'success', $jadwal);
+        }
+
         $jadwal->dosen_tanggal_dari = $request->start;
         $jadwal->dosen_tanggal_selesai = $request->end;
         $jadwal->save();
