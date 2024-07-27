@@ -58,6 +58,7 @@ class GeneticController extends Controller
                     foreach ($arrMahasiswa as $mahasiswa) {
                         $mahasiswaStartDate = new \DateTime($mahasiswa->mahasiswa_start_bimbingan);
                         $mahasiswaEndDate = new \DateTime($mahasiswa->mahasiswa_end_bimbingan);
+                        $mahasiswaEndDate->modify('+1 day');
 
                         $jadwalStartDate = new \DateTime($jadwal->dosen_tanggal_dari);
                         $jadwalEndDate = new \DateTime($jadwal->dosen_tanggal_sampai);
@@ -89,7 +90,7 @@ class GeneticController extends Controller
                 // LOGIKA PENGKABARAN UNTUK DOSEN 
                 if ($dataDosen->user->token != null) {
                     $title = 'Bimbingan';
-                    $body = 'Peserta Bimbingan anda telah keluar, Buka aplikasi untuk mencoba';
+                    $body = 'Peserta Bimbingan anda telah keluar, Buka aplikasi untuk melihat';
                     $token = $dataDosen->user->token;
         
                     $this->firebaseMessagingService->sendNotificationToToken($title, $body, $token);
@@ -114,13 +115,10 @@ class GeneticController extends Controller
                     // LOGIKA PENGKABARAN UNTUK MAHASISWA
                     if ($selectedStudent->user->token != null) {
                         $title = 'Bimbingan Baru';
-                        $body = 'Jadwal Bimbingan telah keluar terbaru! Buka aplikasi untuk memeriksa';
+                        $body = 'Jadwal Bimbingan terbaru telah keluar! Buka aplikasi untuk memeriksa';
                         $token = $selectedStudent->user->token;
         
                         $this->firebaseMessagingService->sendNotificationToToken($title, $body, $token);
-        
-                        echo $token;
-                        echo '<br>';
                     }
                 }
             }
