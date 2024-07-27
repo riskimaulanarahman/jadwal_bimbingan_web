@@ -112,7 +112,7 @@
                                 <input type="text" class="form-control" name="username" required>
                             </div>
                             <div class="form-group">
-                                <label>Username</label>
+                                <label>Batas Bimbingan</label>
                                 <input type="number" class="form-control" name="dosen_batas_bimbingan" required>
                             </div>
                             <div class="form-group">
@@ -150,7 +150,7 @@
                                         value="{{ $dosen->dosen_nama }}" required>
                                 </div>
                                 <div class="form-group">
-                                    <label>Username</label>
+                                    <label>Batas Bimbingan</label>
                                     <input type="number" class="form-control" name="dosen_batas_bimbingan"
                                         value="{{ $dosen->dosen_batas_bimbingan }}" required>
                                 </div>
