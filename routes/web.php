@@ -11,6 +11,7 @@ Route::post('/', [AuthController::class, 'login']);
 Route::get('/logout', [AuthController::class, 'logout']);
 Route::get('/contoh-metode-genetic', [GeneticController::class, 'index']);
 Route::get('/cron-metode-genetic', [GeneticController::class, 'cakaran']);
+Route::get('/cek-notifikasi', [GeneticController::class, 'testNotification']);
 
 
 Route::middleware([AuthMiddleware::class])->group(function() {

@@ -48,6 +48,9 @@
                                                                 style="width: 60.4062px;">Username</th>
                                                             <th class="sorting" tabindex="0" aria-controls="dataTable-1"
                                                                 rowspan="1" colspan="1" aria-label=""
+                                                                style="width: 60.4062px;">Batas Bimbingan</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="dataTable-1"
+                                                                rowspan="1" colspan="1" aria-label=""
                                                                 style="width: 60.4062px;">Aksi</th>
                                                         </tr>
                                                     </thead>
@@ -56,6 +59,7 @@
                                                             <tr role="row" class="odd">
                                                                 <td>{{ $dosen->dosen_nama }}</td>
                                                                 <td>{{ $dosen->user->username }}</td>
+                                                                <td>{{ $dosen->dosen_batas_bimbingan }}</td>
                                                                 <td><button
                                                                         class="btn btn-sm dropdown-toggle more-horizontal"
                                                                         type="button" data-toggle="dropdown"
@@ -108,6 +112,10 @@
                                 <input type="text" class="form-control" name="username" required>
                             </div>
                             <div class="form-group">
+                                <label>Username</label>
+                                <input type="number" class="form-control" name="dosen_batas_bimbingan" required>
+                            </div>
+                            <div class="form-group">
                                 <label>Password</label>
                                 <input type="text" class="form-control" name="password" required>
                             </div>
@@ -140,6 +148,11 @@
                                     <label>Nama</label>
                                     <input type="text" class="form-control" name="dosen_nama"
                                         value="{{ $dosen->dosen_nama }}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Username</label>
+                                    <input type="number" class="form-control" name="dosen_batas_bimbingan"
+                                        value="{{ $dosen->dosen_batas_bimbingan }}" required>
                                 </div>
                             </div>
                             <div class="modal-footer">

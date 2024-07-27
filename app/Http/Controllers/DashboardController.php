@@ -66,6 +66,7 @@ class DashboardController extends Controller
         $dosen = new Dosen();
         $dosen->user_id = $user->user_id;
         $dosen->dosen_nama = $request->dosen_nama;
+        $dosen->dosen_batas_bimbingan = $request->dosen_batas_bimbingan;
         $dosen->save();
         return redirect()->back()->with('success', 'Berhasil menambah data ');
     }
@@ -73,6 +74,7 @@ class DashboardController extends Controller
     public function editDosen(Request $request) {
         $dosen = Dosen::find($request->id);
         $dosen->dosen_nama = $request->dosen_nama;
+        $dosen->dosen_batas_bimbingan = $request->dosen_batas_bimbingan;
         $dosen->save();
         return redirect()->back()->with('success', 'Berhasil mengubah data ');
     }
