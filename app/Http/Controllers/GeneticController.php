@@ -118,9 +118,6 @@ class GeneticController extends Controller
                         $token = $selectedStudent->user->token;
         
                         $this->firebaseMessagingService->sendNotificationToToken($title, $body, $token);
-        
-                        echo $token;
-                        echo '<br>';
                     }
                 }
             }
