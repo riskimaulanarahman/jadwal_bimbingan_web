@@ -82,6 +82,7 @@ class DashboardController extends Controller
     public function deleteDosen($id) {
         $dosen = Dosen::find($id);
         $user = User::find($dosen->user_id);
+        Bimbingan::where('dosen_id', $id)->delete();
         $user->delete();
         $dosen->delete();
         return redirect()->back()->with('error', 'Berhasil menghapus data ');
@@ -116,6 +117,7 @@ class DashboardController extends Controller
     public function deleteMahasiswa($id) {
         $mahasiswa = Mahasiswa::find($id);
         $user = User::find($mahasiswa->user_id);
+        Bimbingan::where('mahasiswa_id', $id)->delete();
         $user->delete();
         $mahasiswa->delete();
         return redirect()->back()->with('error', 'Berhasil menghapus data ');
