@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Bimbingan;
 use App\Models\Dosen;
+use App\Models\JadwalDosen;
 use App\Models\Mahasiswa;
+use App\Models\RiwayatBimbingan;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -83,6 +85,8 @@ class DashboardController extends Controller
         $dosen = Dosen::find($id);
         $user = User::find($dosen->user_id);
         Bimbingan::where('dosen_id', $id)->delete();
+        RiwayatBimbingan::where('dosen_id', $id)->delete();
+        JadwalDosen::where('dosen_id', $id)->delete();
         $user->delete();
         $dosen->delete();
         return redirect()->back()->with('error', 'Berhasil menghapus data ');
@@ -118,6 +122,7 @@ class DashboardController extends Controller
         $mahasiswa = Mahasiswa::find($id);
         $user = User::find($mahasiswa->user_id);
         Bimbingan::where('mahasiswa_id', $id)->delete();
+        RiwayatBimbingan::where('mahasiswa_id', $id)->delete();
         $user->delete();
         $mahasiswa->delete();
         return redirect()->back()->with('error', 'Berhasil menghapus data ');
